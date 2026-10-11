@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="refresh" content="60">
+<title>Kalshi Bot Results</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f3f5f9; --surface: #ffffff; --ink: #111827; --ink-2: #4b5563; --muted: #8a93a3;
+    --border: rgba(17, 24, 39, 0.08); --grid: #e8ecf2; --axis: #c9d1dd;
+    --accent: #2a78d6; --accent-wash: rgba(42, 120, 214, 0.10);
+    --pos: #047857; --pos-tint: #e6f6ef; --neg: #c2362f; --neg-tint: #fdecea;
+    --info: #2a6fc9; --info-tint: rgba(42, 120, 214, 0.12); --mute-tint: rgba(75, 85, 99, 0.12);
+    --head: #f6f8fb; --hover: #f7f9fc;
+    --band-from: #0d1b36; --band-to: #173a6e;
+    --shadow: 0 1px 2px rgba(17, 24, 39, 0.05), 0 8px 24px rgba(17, 24, 39, 0.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0a101c; --surface: #111a2b; --ink: #e9eef7; --ink-2: #a8b4c8; --muted: #74829b;
+      --border: rgba(255, 255, 255, 0.07); --grid: #1c2740; --axis: #2a3954;
+      --accent: #3987e5; --accent-wash: rgba(57, 135, 229, 0.14);
+      --pos: #34d399; --pos-tint: rgba(52, 211, 153, 0.12); --neg: #f87171; --neg-tint: rgba(248, 113, 113, 0.12);
+      --info: #7ab3f2; --info-tint: rgba(75, 147, 234, 0.16); --mute-tint: rgba(168, 180, 200, 0.14);
+      --head: #0f182a; --hover: #152035; --band-from: #0b1428; --band-to: #13284d;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0a101c; --surface: #111a2b; --ink: #e9eef7; --ink-2: #a8b4c8; --muted: #74829b;
+    --border: rgba(255, 255, 255, 0.07); --grid: #1c2740; --axis: #2a3954;
+    --accent: #3987e5; --accent-wash: rgba(57, 135, 229, 0.14);
+    --pos: #34d399; --pos-tint: rgba(52, 211, 153, 0.12); --neg: #f87171; --neg-tint: rgba(248, 113, 113, 0.12);
+    --info: #7ab3f2; --info-tint: rgba(75, 147, 234, 0.16); --mute-tint: rgba(168, 180, 200, 0.14);
+    --head: #0f182a; --hover: #152035; --band-from: #0b1428; --band-to: #13284d;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  .band { background: linear-gradient(120deg, var(--band-from), var(--band-to)); color: #fff; padding: 28px 16px 64px; }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .band h1 { margin: 0 0 4px; font-size: 26px; letter-spacing: -0.01em; }
+  .band .meta { color: rgba(255,255,255,0.72); font-size: 13px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  nav { display: flex; gap: 6px; margin-top: 18px; flex-wrap: wrap; }
+  nav a { color: #fff; text-decoration: none; font-size: 13px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.10); }
+  nav a:hover { background: rgba(255,255,255,0.18); }
+  main { max-width: 1080px; margin: -44px auto 40px; padding: 0 16px; display: grid; gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 18px; min-width: 0; }
+  .card h2 { margin: 0 0 2px; font-size: 17px; }
+  .card .hint { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 16px; }
+  .tile-label { color: var(--ink-2); font-size: 13px; }
+  .tile-value { font-size: 28px; font-weight: 650; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .tile-sub { color: var(--muted); font-size: 13px; }
+  .pos { color: var(--pos); } .neg { color: var(--neg); }
+  .table-wrap { overflow-x: auto; margin: 0 -18px; padding: 0 18px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .table-wrap table { min-width: 640px; }  /* phones scroll the table instead of squashing it */
+  td:first-child { white-space: nowrap; }
+  th { text-align: left; font-weight: 600; color: var(--ink-2); font-size: 12px; background: var(--head); padding: 8px 10px; white-space: nowrap; }
+  td { padding: 9px 10px; border-top: 1px solid var(--grid); vertical-align: top; }
+  tbody tr:hover { background: var(--hover); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sub { color: var(--muted); font-size: 12px; }
+  .pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; }
+  .pill.pos { background: var(--pos-tint); color: var(--pos); }
+  .pill.neg { background: var(--neg-tint); color: var(--neg); }
+  .pill.info { background: var(--info-tint); color: var(--info); }
+  .pill.muted { background: var(--mute-tint); color: var(--ink-2); }
+  .band .pill.pos { background: rgba(52, 211, 153, 0.18); color: #a7f3d0; }
+  .band .pill.muted { background: rgba(255,255,255,0.14); color: #fff; }
+  .empty { color: var(--muted); margin: 6px 0; }
+  .chart { position: relative; }
+  .chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .chart .grid { stroke: var(--grid); stroke-width: 1; }
+  .chart .zero { stroke: var(--axis); stroke-width: 1; }
+  .chart .tick { fill: var(--muted); font-size: 11px; }
+  .chart .line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .chart .end-dot, .chart .hover-dot { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+  .chart .end-label { fill: var(--ink); font-size: 12px; font-weight: 600; }
+  .chart .crosshair { stroke: var(--axis); stroke-width: 1; }
+  .chart .hit { fill: transparent; cursor: crosshair; }
+  .tooltip { position: absolute; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--border);
+    box-shadow: var(--shadow); border-radius: 10px; padding: 8px 10px; font-size: 12px; min-width: 150px; transform: translate(-50%, calc(-100% - 12px)); }
+  .tooltip strong { display: block; font-size: 13px; }
+  .rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .rule-card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .rule-card h3 { margin: 0 0 6px; font-size: 14px; }
+  .rule-card ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .rule-name { font-weight: 600; font-size: 13px; }
+  .rule-card p { margin: 2px 0 0; color: var(--ink-2); font-size: 13px; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  select { font: inherit; font-size: 13px; color: var(--ink); background: var(--surface); border: 1px solid var(--axis); border-radius: 8px; padding: 6px 8px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 0 16px 32px; }
+  @media (max-width: 760px) {
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .rules { grid-template-columns: 1fr; }
+    .tile-value { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<header class="band">
+  <div class="wrap">
+    <h1>Kalshi Bot</h1>
+    <div class="meta"><span class="pill pos">Live trading</span><span>Updated Oct 11, 2026 at 6:42 PM Central Daylight Time · refreshes every minute</span></div>
+    <nav><a href="#overview">Overview</a><a href="#open">Open bets</a><a href="#live">Live</a><a href="#by-rule">By rule</a><a href="#rules">Rules</a><a href="#history">History</a></nav>
+  </div>
+</header>
+<main>
+  <section id="overview" class="tiles"><div class="tile"><div class="tile-label">Total profit / loss</div><div class="tile-value ">$0.00</div><div class="tile-sub">—</div></div><div class="tile"><div class="tile-label">Record</div><div class="tile-value ">0&ndash;0</div><div class="tile-sub">0 settled bets</div></div><div class="tile"><div class="tile-label">Win rate</div><div class="tile-value ">—</div><div class="tile-sub">of settled bets</div></div><div class="tile"><div class="tile-label">Open bets</div><div class="tile-value ">1</div><div class="tile-sub">$14.96 at stake</div></div></section>
+  <section class="card">
+    <h2>Cumulative profit / loss</h2>
+    <p class="hint">Every settled bet, in the order it settled</p>
+    <p class="empty">The chart starts once two bets have settled.</p>
+  </section>
+  <section id="open" class="card">
+    <h2>Open bets</h2>
+    <p class="hint">Placed and waiting on the result</p>
+    <div class="table-wrap"><table class=""><thead><tr><th>Placed</th><th>Sport</th><th>Team</th><th>Rule</th><th>Pregame &rarr; live</th><th>Price</th><th>Cost</th><th>Pays if win</th></tr></thead><tbody><tr><td>Oct 11, 6:33 PM</td><td>Soccer</td><td><strong>CF Pachuca</strong><div class="sub">Necaxa @ CF Pachuca</div></td><td>Moderate favorite</td><td class="num">-150 &rarr; +185</td><td class="num">34¢</td><td class="num">$14.96</td><td class="num">$44.00</td></tr></tbody></table></div>
+  </section>
+  <section id="live" class="card">
+    <h2>Live games</h2>
+    <p class="hint">In progress, with a favorite that qualifies for a rule (pregame odds locked)</p>
+    <p class="empty">No game with a qualifying favorite is in progress.</p>
+  </section>
+  <section id="by-rule" class="card">
+    <h2>Results by rule</h2>
+    <p class="hint">How each rule has done</p>
+    <div class="table-wrap"><table class=""><thead><tr><th>Rule</th><th>Sport</th><th>Bets</th><th>W&ndash;L</th><th>Win %</th><th>Net</th><th>ROI</th></tr></thead><tbody><tr><td>Moderate favorite</td><td>Soccer</td><td class="num">1</td><td class="num">0&ndash;0</td><td class="num">—</td><td class="num ">$0.00</td><td class="num">—</td></tr></tbody></table></div>
+  </section>
+  <section id="rules" class="card">
+    <h2>Rules</h2>
+    <p class="hint">$15 per bet, buying the pregame favorite on Kalshi</p>
+    <div class="rules"><div class="rule-card"><h3>NFL</h3><ul><li><div class="rule-name">Favorite fade</div><p>Favorite opened at -250 or stronger. Bet it when its live odds fade to -115 or longer.</p></li><li><div class="rule-name">Fourth quarter reentry</div><p>After a favorite-fade bet on the same game: bet again in the 4th quarter if the favorite is +110 to +165.</p></li><li><div class="rule-name">Moderate favorite</div><p>Favorite opened at -150 or stronger. Bet it once when its live odds are +100 to +150.</p></li></ul></div><div class="rule-card"><h3>College football</h3><ul><li><div class="rule-name">Favorite fade</div><p>Favorite opened at -250 or stronger. Bet it when its live odds fade to -115 or longer.</p></li><li><div class="rule-name">Fourth quarter reentry</div><p>After a favorite-fade bet on the same game: bet again in the 4th quarter if the favorite is +110 to +165.</p></li><li><div class="rule-name">Moderate favorite</div><p>Favorite opened at -150 or stronger. Bet it once when its live odds are +100 to +150.</p></li></ul></div><div class="rule-card"><h3>MLB</h3><ul><li><div class="rule-name">Favorite fade</div><p>Favorite opened at -200 or stronger. From the 7th inning on, bet it when its live odds are +100 to +200.</p></li></ul></div><div class="rule-card"><h3>NHL</h3><ul><li><div class="rule-name">Favorite trails by one</div><p>Favorite opened at -170 or stronger. Bet it when the underdog leads 1-0 or 2-1, unless it&#x27;s the last 6 minutes of the 3rd period or overtime.</p></li></ul></div><div class="rule-card"><h3>Soccer</h3><ul><li><div class="rule-name">Heavy favorite</div><p>Favorite opened at -200 or stronger. Bet it when its live odds drift to +100 to +200; not past +200.</p></li><li><div class="rule-name">Moderate favorite</div><p>Favorite opened between -150 and -199. Bet it when its live odds move past +115; not if it&#x27;s down a goal after halftime, or past +200.</p></li><li><div class="rule-name">First half favorite</div><p>Favorite opened at -300 or stronger. While it&#x27;s 0-0 in the first half, bet it to win the first half when its first-half odds are -130 to +120.</p></li></ul></div><div class="rule-card"><h3>Tennis</h3><ul><li><div class="rule-name">Heavy favorite</div><p>Favorite opened at -200 or stronger. Bet it when its live odds fade to near even: -110 to +100.</p></li></ul></div></div>
+  </section>
+  <section id="history" class="card">
+    <h2>Trade history</h2>
+    <p class="hint">Every bet the bot has placed, newest first</p>
+    <div class="filters">
+      <select id="f-sport" aria-label="Filter by sport"><option value="">All sports</option><option value="soccer">Soccer</option></select>
+      <select id="f-rule" aria-label="Filter by rule"><option value="">All rules</option><option value="soccer_moderate_favorite">Moderate favorite</option></select>
+    </div>
+    <div class="table-wrap"><table class="history"><thead><tr><th>Placed</th><th>Sport</th><th>Team</th><th>Rule</th><th>Odds</th><th>Price</th><th>Cost</th><th>Result</th><th>P/L</th></tr></thead><tbody><tr data-sport="soccer" data-rule="soccer_moderate_favorite"><td>Oct 11, 6:33 PM</td><td>Soccer</td><td><strong>CF Pachuca</strong><div class="sub">Necaxa @ CF Pachuca</div></td><td>Moderate favorite</td><td class="num">+185</td><td class="num">34¢</td><td class="num">$14.96</td><td><span class="pill info">Open</span></td><td class="num">—</td></tr></tbody></table></div>
+  </section>
+</main>
+<footer>Bets placed automatically by the bot on Kalshi. Bets placed by hand are not included.</footer>
+<script>
+(function () {
+  var s = document.getElementById("f-sport"), r = document.getElementById("f-rule");
+  function apply() {
+    document.querySelectorAll("table.history tbody tr").forEach(function (tr) {
+      tr.hidden = (s.value && tr.dataset.sport !== s.value) || (r.value && tr.dataset.rule !== r.value);
+    });
+  }
+  if (s && r) { s.onchange = apply; r.onchange = apply; }
+
+  var data = document.getElementById("pnl-data");
+  if (!data) return;
+  var pts = JSON.parse(data.textContent), svg = document.querySelector("#pnl-chart svg");
+  var cross = document.getElementById("pnl-cross"), dot = document.getElementById("pnl-dot");
+  var tip = document.getElementById("pnl-tip"), hit = svg.querySelector(".hit");
+  function show(evt) {
+    var box = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
+    var x = (evt.clientX - box.left) * vb.width / box.width, best = pts[0];
+    pts.forEach(function (p) { if (Math.abs(p.x - x) < Math.abs(best.x - x)) best = p; });
+    cross.setAttribute("x1", best.x); cross.setAttribute("x2", best.x); cross.setAttribute("visibility", "visible");
+    dot.setAttribute("cx", best.x); dot.setAttribute("cy", best.y); dot.setAttribute("visibility", "visible");
+    tip.replaceChildren();
+    var head = document.createElement("strong"); head.textContent = best.cum + " total";
+    var line1 = document.createElement("div"); line1.textContent = best.result + " " + best.pnl + " · " + best.team;
+    var line2 = document.createElement("div"); line2.className = "sub"; line2.textContent = best.when;
+    tip.append(head, line1, line2);
+    tip.style.left = (best.x * box.width / vb.width) + "px";
+    tip.style.top = (best.y * box.height / vb.height) + "px";
+    tip.hidden = false;
+  }
+  function hide() { cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden"); tip.hidden = true; }
+  hit.addEventListener("pointermove", show);
+  hit.addEventListener("pointerleave", hide);
+})();
+</script>
+</body>
+</html>
